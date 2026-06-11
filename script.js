@@ -23,7 +23,7 @@
 
   // Scroll reveal
   const revealTargets = document.querySelectorAll(
-    ".story-copy, .section > .container, .beta-inner, .hero-content, .hero-visual"
+    ".story-copy, .section > .container, .examples-intro .container, .beta-inner, .hero-content, .hero-visual"
   );
 
   revealTargets.forEach((el) => el.classList.add("reveal"));
