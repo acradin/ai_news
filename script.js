@@ -158,4 +158,46 @@
       }
     });
   });
+
+  // Feedback modal
+  const feedbackModal = document.getElementById("feedback-modal");
+  const feedbackOpeners = document.querySelectorAll("[data-feedback-open]");
+  const feedbackClosers = document.querySelectorAll("[data-feedback-close]");
+  let feedbackLastFocus = null;
+
+  function openFeedbackModal() {
+    if (!feedbackModal) return;
+    feedbackLastFocus = document.activeElement;
+    feedbackModal.hidden = false;
+    feedbackModal.classList.add("is-open");
+    document.body.classList.add("modal-open");
+    const textarea = feedbackModal.querySelector("#submit-advice");
+    if (textarea) {
+      window.setTimeout(() => textarea.focus(), 50);
+    }
+  }
+
+  function closeFeedbackModal() {
+    if (!feedbackModal) return;
+    feedbackModal.classList.remove("is-open");
+    feedbackModal.hidden = true;
+    document.body.classList.remove("modal-open");
+    if (feedbackLastFocus && typeof feedbackLastFocus.focus === "function") {
+      feedbackLastFocus.focus();
+    }
+  }
+
+  feedbackOpeners.forEach((btn) => {
+    btn.addEventListener("click", openFeedbackModal);
+  });
+
+  feedbackClosers.forEach((el) => {
+    el.addEventListener("click", closeFeedbackModal);
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && feedbackModal && !feedbackModal.hidden) {
+      closeFeedbackModal();
+    }
+  });
 })();

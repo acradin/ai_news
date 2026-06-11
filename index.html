@@ -13,7 +13,10 @@
       <a href="#" class="logo">
         <img src="assets/images/logo.png" alt="한줄뉴스" width="500" height="500">
       </a>
-      <a href="#beta" class="nav-cta">무료 체험</a>
+      <div class="nav-actions">
+        <button type="button" class="nav-feedback" data-feedback-open>피드백 남기기</button>
+        <a href="#today-news" class="nav-cta">오늘 뉴스 한줄보기</a>
+      </div>
     </nav>
   </header>
 
@@ -26,7 +29,7 @@
           <h1 class="hero-title">최신 뉴스를<br>한 줄로</h1>
           <p class="hero-desc">기사 대신 확인된 사실만 한 문장으로.<br>제목과 해석이 아니라 팩트만 읽습니다.</p>
           <div class="hero-actions">
-            <a href="#examples" class="btn btn-primary">한 줄로 확인하기</a>
+            <a href="#today-news" class="btn btn-primary">오늘 뉴스 한줄보기</a>
           </div>
         </div>
         <div class="hero-visual">
@@ -90,13 +93,12 @@
     </section>
 
     <!-- 4. Examples -->
-    <div class="examples-block" id="examples">
+    <div class="examples-block">
       <section class="examples-intro section section-compact section-alt">
         <div class="container">
           <div class="section-intro-wide">
-            <p class="section-label center">예시 맛보기</p>
-            <h2 class="section-title center">한 줄, 이렇게 읽힙니다</h2>
-            <p class="section-lead center">아래 카드는 서비스 화면을 보여주는 예시입니다. 데모용 뉴스이며, 실제 발행 내용과 다를 수 있습니다.</p>
+            <p class="section-label center">오늘의 뉴스</p>
+            <p class="section-title center">확인된 사실만, 한 문장으로.</p>
           </div>
           <p class="examples-scroll-hint" aria-hidden="true">아래로 스크롤해 예시를 확인하세요</p>
         </div>
@@ -115,7 +117,7 @@
           </svg>
         </button>
 
-        <div class="news-viewport">
+        <div class="news-viewport" id="today-news">
           <div class="news-track">
             <article class="news-full-card is-active" data-index="0" style="--card-bg: url('https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1600&q=80&auto=format&fit=crop')">
               <div class="news-full-card-inner">
@@ -212,12 +214,13 @@
     <section class="section section-compact beta" id="beta">
       <div class="container">
         <div class="section-intro-wide beta-inner">
-          <p class="section-label center">무료 체험</p>
-          <h2 class="section-title center">지금 바로 무료로 체험</h2>
+          <p class="section-label center">100% 무료</p>
+          <h2 class="section-title center">지금 바로 한줄 읽기</h2>
           <p class="section-lead center">비용 없이, 매일 사실만 한 줄로 받아보세요. 현명한 시민의 뉴스 확인 방식을 직접 경험해 보세요.</p>
           <div class="hero-actions center">
-            <a href="https://forms.gle/placeholder" class="btn btn-primary" target="_blank" rel="noopener noreferrer">무료로 체험하기</a>
-            <a href="https://pf.kakao.com/placeholder" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">카카오톡으로 무료 체험</a>
+            <button type="button" class="btn btn-primary" data-feedback-open>피드백 남기기</button>
+            <a href="https://pf.kakao.com/placeholder" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">카카오톡으로 받아보기</a>
+            <a href="https://www.instagram.com/placeholder" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">인스타 바로가기</a>
           </div>
         </div>
       </div>
@@ -230,11 +233,401 @@
         <img src="assets/images/logo.png" alt="한줄뉴스" width="500" height="500">
       </a>
       <p class="footer-tagline">현명한 시민이 읽는 한 줄</p>
-      <a href="mailto:feedback@example.com" class="footer-link">피드백 보내기</a>
+      <div class="footer-actions">
+        <button type="button" class="footer-action-btn" data-feedback-open>피드백 남기기</button>
+        <a href="https://www.instagram.com/placeholder" class="footer-action-btn" target="_blank" rel="noopener noreferrer">인스타 바로가기</a>
+      </div>
       <p class="footer-copy">&copy; 2026 한줄뉴스. All rights reserved.</p>
     </div>
   </footer>
 
+  <div class="feedback-modal" id="feedback-modal" hidden>
+    <div class="feedback-modal-backdrop" data-feedback-close></div>
+    <div class="feedback-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="feedback-modal-title">
+      <button type="button" class="feedback-modal-close" data-feedback-close aria-label="닫기">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <path d="M5 5L15 15M15 5L5 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <h2 class="feedback-modal-title" id="feedback-modal-title">피드백 남기기</h2>
+      <div class="feedback-form">
+        <p class="feedback-desc">서비스가 이렇게 되었으면 좋겠다는 조언을 해 주세요.</p>
+        <div class="feedback-field">
+          <label class="visually-hidden" for="submit-advice">서비스에 대한 조언</label>
+          <textarea id="submit-advice" name="advice" rows="5" placeholder="서비스에 대한 조언을 남겨주세요"></textarea>
+        </div>
+        <div class="feedback-actions">
+          <button type="button" class="btn btn-primary" id="submit">지금 제출</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="script.js"></script>
+  <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script type="application/javascript">
+    var ip = "null";
+    function getIP(json) {
+      console.log(json);
+      try {
+        ip = json.ip;
+      } catch (e) {
+        ip = 'unknown';
+      }
+      return;
+    }
+  </script>
+  <script type="application/javascript" src="https://jsonip.com?format=jsonp&callback=getIP"></script>
+  <script>
+    function doGet(req) {
+      // return ContentService.createTextOutput(JSON.stringify(req));  
+      var SHEET_URL = "https://docs.google.com/spreadsheets/d/...../edit"
+      var SHEET_ID = "...."
+      var action    = req.parameter.action;
+      var table_req = req.parameter.table;
+    
+      //var db    = SpreadsheetApp.openById( SHEET_ID );
+      var db = SpreadsheetApp.openByUrl(SHEET_URL);
+      var table = db.getSheetByName( table_req );
+      var ret;
+        
+      switch(action) {
+        case "read":
+            ret = Read( req, table );
+            break;
+        case "insert":
+            ret = Insert( req, table );
+            break;
+        case "update":
+            ret = Update( req, table );
+            break;
+        case "delete":
+            ret = Delete( req, table );
+            break;
+        default:
+            break;
+      }
+
+      return response().jsonp(req, ret);
+    }
+      
+    /* Read
+    * request for all tables
+    *
+    * @parameter action=read
+    * @parameter table=
+    * @parameter id=
+    *
+    * @example-request | ?action=read&table=
+    * @example-request-single-row | ?action=read&table=&id=
+    */
+    function Read( request, table ) {
+      var request_id = Number( request.parameter.id );
+      return {
+        success: true,
+        data: _read( table, request_id )
+      };
+    }
+      
+    /* Insert
+    * dynamic for all data
+    *
+    * @parameter action=insert
+    * @parameter table=
+    * @parameter data=JSON
+    *  
+    * @example-request | ?action=insert&table=&data={"name":"John Doe"}
+    */
+    function Insert( request, table ) {
+      var errors = [];
+      
+      var last_col     = table.getLastColumn();
+      var first_row    = table.getRange(1, 1, 1, last_col).getValues();
+      var headers      = first_row.shift();
+      var data         = JSON.parse( request.parameter.data );
+      var new_row;
+      var result = {};  
+    
+      try {
+        new_row = prepareRow( data, headers );
+        table.appendRow( new_row );
+
+        result.success = true;
+        result.data = data;
+      } catch ( error ) {
+        result.success = false;
+        result.data = { error: error.messsage };
+      }
+        return result;
+    }
+      
+    /* Update
+    * dynamic for all tablese
+    *
+    * @parameter action=update
+    * @parameter table=
+    * @parameter id=
+    * @parameter data=JSON
+    * 
+    * @example-request | ?action=update&table=&id=&data={"col_to_update": "value" }
+    */
+    function Update( request, table ) {
+      var last_col      = table.getLastColumn();
+      var first_row     = table.getRange(1, 1, 1, last_col).getValues();
+      var headers       = first_row.shift();
+      
+      var request_id    = Number( request.parameter.id );
+      var current_data  = _read( table, request_id );
+      var data          = JSON.parse( request.parameter.data );
+      
+      var result = {};
+      
+      try {
+        var current_row   = current_data.row;
+        for( var object_key in data ) {
+          var current_col = headers.indexOf( object_key ) + 1;
+          table.getRange( current_row, current_col ).setValue( data[ object_key ]); // update iteratively
+          current_data[ object_key ] = data[ object_key ]; // update for response;
+        }
+        result.successs = true;
+        result.data = current_data;
+      } catch ( error ) {
+        result.success = false;
+        result.data = { error: error.messsage };
+      }
+        
+      return response().json( result );
+    }
+      
+    /* Delete
+    * dynamic for all tables
+    *
+    * @parameter action=delete
+    * @parameter table=
+    * @parameter id=
+    * 
+    * @example-request | ?action=update&table=&id=
+    */
+    function Delete( request, table ) {
+      var request_id    = Number( request.parameter.id );
+      var current_data  = _read( table, request_id );
+      
+      // delete
+      table.deleteRow( current_data.row );
+      
+      return response().json({
+        success: true,
+        data: current_data
+      });
+    }
+      
+    /**
+     * Build the response content type 
+     * back to the user
+     */
+    function response() {
+      return {
+        json: function(data) {
+            return ContentService.createTextOutput(
+            JSON.stringify(data)).setMimeType(ContentService.MimeType.JSON);
+        },
+        jsonp: function(req, data) {
+          return ContentService.createTextOutput(
+            req.parameters.callback + '(' + JSON.stringify(data) + ')').setMimeType(ContentService.MimeType.JAVASCRIPT);
+        }
+      }
+    }
+      
+    /**
+    * Read from sheet and return map key-value
+    * javascript object
+    */
+    function _read( sheet, id ) {
+      var data         = sheet.getDataRange().getValues();
+      var header       = data.shift();
+      
+      // Find All
+      var result = data.map(function( row, indx ) {
+      var reduced = header.reduce( function(accumulator, currentValue, currentIndex) {
+        accumulator[ currentValue ] = row[ currentIndex ];
+        return accumulator;
+      }, {});
+      
+      reduced.row = indx + 2;
+      return reduced;
+      
+      });
+        
+      // Filter if id is provided
+      if( id ) {
+        var filtered = result.filter( function( record ) {
+          if ( record.id === id ) {
+            return true;
+          } else {
+            return false;
+          }
+        });
+        return filtered.shift();
+      }
+      
+      return result;  
+    }
+      
+    /*
+    * Prepare row with correct order to insert into
+    * sheet.
+    * 
+    * @throws Error
+    */
+    function prepareRow( object_to_sort, array_with_order ) {
+      var sorted_array   = [];
+        
+      for( var i=0; i<array_with_order.length; i++ ) {
+        var value = object_to_sort[ array_with_order[ i ]];
+
+        if( typeof value === 'undefined' ) {
+          throw new Error( "The attribute/column <" + array_with_order[i] + "> is missing." );
+        } else {
+          sorted_array[i] = value;      
+        }
+      }
+      
+      return sorted_array;
+    }
+
+    // 쿠키에서 값을 가져오는 함수
+    function getCookieValue(name) {
+      const value = "; " + document.cookie;
+      const parts = value.split("; " + name + "=");
+      if (parts.length === 2) {
+        return parts.pop().split(";").shift();
+      }
+    }
+
+    // 쿠키에 값을 저장하는 함수
+    function setCookieValue(name, value, days) {
+      let expires = "";
+      if (days) {
+        const date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = "; expires=" + date.toUTCString();
+      }
+      document.cookie = name + "=" + (value || "") + expires + "; path=/";
+    }
+
+    function getUVfromCookie() {
+      // 6자리 임의의 문자열 생성
+      const hash = Math.random().toString(36).substring(2, 8).toUpperCase();
+      // 쿠키에서 기존 해시 값을 가져옴
+      const existingHash = getCookieValue("user");
+      // 기존 해시 값이 없으면, 새로운 해시 값을 쿠키에 저장
+      if (!existingHash) {
+        setCookieValue("user", hash, 180); // 쿠키 만료일은 6개월 
+        return hash;
+      } else {
+        // 기존 해시 값이 있으면, 기존 값을 반환
+        return existingHash;
+      }
+    }
+
+    // Sam pading value to start with 0. eg: 01, 02, .. 09, 10, ..
+    function padValue(value) {
+      return (value < 10) ? "0" + value : value;
+    }
+
+    function getTimeStamp() {
+      const date = new Date();
+
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1;
+      const day = date.getDate();
+      const hours = date.getHours();
+      const minutes = date.getMinutes();
+      const seconds = date.getSeconds();
+
+      const formattedDate = `${padValue(year)}-${padValue(month)}-${padValue(day)} ${padValue(hours)}:${padValue(minutes)}:${padValue(seconds)}`;
+
+      return formattedDate;
+    }
+
+    var queryString = location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const utm = urlParams.get("utm")
+
+    var mobile = 'desktop';
+    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+      // true for mobile device
+      mobile = 'mobile';
+    }
+
+    /* data를 만들 땐 모든 field가 들어 있어야 함 */
+    var data = JSON.stringify(
+      {"id": getUVfromCookie(),
+        "landingUrl":window.location.href, 
+        "ip":ip, 
+        "referer":document.referrer,
+        "time_stamp":getTimeStamp(), 
+        "utm":utm,
+        "device":mobile}
+    );
+
+    $(document).ready(function () {
+      addrScript = 'https://script.google.com/macros/s/AKfycbxcFTg0Vfc4_12Bd5rB620PwNXs5Rj2ipSwTWRt4sCZd6tBvvpACVfo5XOll95aQWtMyQ/exec';
+
+      // $.ajax({
+      //   url: addrScript+'?action=insert&table=visitors&data='+data,
+      //   dataType: 'jsonp',
+      //   success: function (data) {
+      //     console.log('성공 - ', JSON.stringify(data));
+      //   },
+      //   error: function (xhr) {
+      //     console.log('실패 - ', JSON.stringify(xhr));
+      //   }
+      // });
+
+      // axios request
+      axios.get(addrScript+'?action=insert&table=tab_master&data='+data)
+      .then(response => {
+        console.log(JSON.stringify(response));
+      })
+    });
+
+    axios.get(addrScript+'?action=insert&table=visitors&data='+data)
+    .then(response => {
+      console.log(JSON.stringify(response));
+    })
+    .catch(error => {
+      if (error.response) {
+        // 서버가 2xx 범위를 벗어난 상태 코드로 응답한 경우
+        console.log(error.response.data);
+        console.log(error.response.status);
+        console.log(error.response.headers);
+      } else if (error.request) {
+        // 요청이 전송되었지만 응답을 받지 못한 경우
+        console.log(error.request);
+      } else {
+        // 요청 설정 중에 오류가 발생한 경우
+        console.log('Error', error.message);
+      }
+      console.log(error.config);
+    });
+
+    $("#submit").on("click", function () {
+      const advice = $("#submit-advice").val();
+
+      var finalData = JSON.stringify({
+        "id": getUVfromCookie(),
+        "advice": advice
+      });
+
+      axios.get('https://**script url**/exec?action=insert&table=tab_final&data=' + finalData)
+      .then(response => {
+        console.log(response.data.data);
+        alert(JSON.stringify(response));
+        $('#submit-advice').val('');
+      })
+    });
+  </script>
 </body>
 </html>
