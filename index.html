@@ -327,7 +327,7 @@
 
     var queryString = location.search;
     const urlParams = new URLSearchParams(queryString);
-    const utm = urlParams.get("utm")
+    const utm = urlParams.get("utm") || "organic";
 
     var mobile = 'desktop';
     if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
