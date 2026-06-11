@@ -42,7 +42,7 @@
   --shadow-lg: 0 12px 48px rgba(0, 0, 0, 0.5);
   --max-width: 1080px;
   --narrow-width: 720px;
-  --header-height: 52px;
+  --header-height: 60px;
   --transition: 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
@@ -68,12 +68,10 @@ body {
   background: var(--color-bg);
 }
 
-.logo,
 .hero-title,
 .problem-hook-title,
 .news-fullpage-label,
-.card-body,
-.footer-brand {
+.card-body {
   font-family: var(--font-sans);
   letter-spacing: -0.01em;
 }
@@ -125,15 +123,27 @@ img {
 }
 
 .logo {
-  font-size: 21px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  height: 42px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.logo img {
+  display: block;
+  width: 152px;
+  height: auto;
+  flex-shrink: 0;
 }
 
 @media (max-width: 480px) {
   .logo {
-    font-size: 17px;
+    height: 36px;
+  }
+
+  .logo img {
+    width: 128px;
   }
 }
 
@@ -1001,10 +1011,31 @@ img {
   text-align: center;
 }
 
-.footer-brand {
-  font-size: var(--font-subheading);
-  font-weight: 400;
-  margin-bottom: 4px;
+.footer-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 60px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.footer-logo img {
+  display: block;
+  width: 220px;
+  height: auto;
+  margin: 0 auto;
+  opacity: 0.95;
+}
+
+@media (max-width: 480px) {
+  .footer-logo {
+    height: 52px;
+  }
+
+  .footer-logo img {
+    width: 188px;
+  }
 }
 
 .footer-tagline {
