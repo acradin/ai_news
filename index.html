@@ -219,8 +219,8 @@
           <p class="section-lead center">비용 없이, 매일 사실만 한 줄로 받아보세요. 현명한 시민의 뉴스 확인 방식을 직접 경험해 보세요.</p>
           <div class="hero-actions center">
             <button type="button" class="btn btn-primary" data-feedback-open>피드백 남기기</button>
-            <a href="https://pf.kakao.com/placeholder" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">카카오톡으로 받아보기</a>
-            <a href="https://www.instagram.com/placeholder" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">인스타 바로가기</a>
+            <a href="#" class="btn btn-secondary" data-coming-soon>카카오톡으로 받아보기</a>
+            <a href="#" class="btn btn-secondary" data-coming-soon>인스타 바로가기</a>
           </div>
         </div>
       </div>
@@ -235,7 +235,7 @@
       <p class="footer-tagline">현명한 시민이 읽는 한 줄</p>
       <div class="footer-actions">
         <button type="button" class="footer-action-btn" data-feedback-open>피드백 남기기</button>
-        <a href="https://www.instagram.com/placeholder" class="footer-action-btn" target="_blank" rel="noopener noreferrer">인스타 바로가기</a>
+        <a href="#" class="footer-action-btn" data-coming-soon>인스타 바로가기</a>
       </div>
       <p class="footer-copy">&copy; 2026 한줄뉴스. All rights reserved.</p>
     </div>
@@ -280,222 +280,6 @@
   </script>
   <script type="application/javascript" src="https://jsonip.com?format=jsonp&callback=getIP"></script>
   <script>
-    function doGet(req) {
-      // return ContentService.createTextOutput(JSON.stringify(req));  
-      var SHEET_URL = "https://docs.google.com/spreadsheets/d/...../edit"
-      var SHEET_ID = "...."
-      var action    = req.parameter.action;
-      var table_req = req.parameter.table;
-    
-      //var db    = SpreadsheetApp.openById( SHEET_ID );
-      var db = SpreadsheetApp.openByUrl(SHEET_URL);
-      var table = db.getSheetByName( table_req );
-      var ret;
-        
-      switch(action) {
-        case "read":
-            ret = Read( req, table );
-            break;
-        case "insert":
-            ret = Insert( req, table );
-            break;
-        case "update":
-            ret = Update( req, table );
-            break;
-        case "delete":
-            ret = Delete( req, table );
-            break;
-        default:
-            break;
-      }
-
-      return response().jsonp(req, ret);
-    }
-      
-    /* Read
-    * request for all tables
-    *
-    * @parameter action=read
-    * @parameter table=
-    * @parameter id=
-    *
-    * @example-request | ?action=read&table=
-    * @example-request-single-row | ?action=read&table=&id=
-    */
-    function Read( request, table ) {
-      var request_id = Number( request.parameter.id );
-      return {
-        success: true,
-        data: _read( table, request_id )
-      };
-    }
-      
-    /* Insert
-    * dynamic for all data
-    *
-    * @parameter action=insert
-    * @parameter table=
-    * @parameter data=JSON
-    *  
-    * @example-request | ?action=insert&table=&data={"name":"John Doe"}
-    */
-    function Insert( request, table ) {
-      var errors = [];
-      
-      var last_col     = table.getLastColumn();
-      var first_row    = table.getRange(1, 1, 1, last_col).getValues();
-      var headers      = first_row.shift();
-      var data         = JSON.parse( request.parameter.data );
-      var new_row;
-      var result = {};  
-    
-      try {
-        new_row = prepareRow( data, headers );
-        table.appendRow( new_row );
-
-        result.success = true;
-        result.data = data;
-      } catch ( error ) {
-        result.success = false;
-        result.data = { error: error.messsage };
-      }
-        return result;
-    }
-      
-    /* Update
-    * dynamic for all tablese
-    *
-    * @parameter action=update
-    * @parameter table=
-    * @parameter id=
-    * @parameter data=JSON
-    * 
-    * @example-request | ?action=update&table=&id=&data={"col_to_update": "value" }
-    */
-    function Update( request, table ) {
-      var last_col      = table.getLastColumn();
-      var first_row     = table.getRange(1, 1, 1, last_col).getValues();
-      var headers       = first_row.shift();
-      
-      var request_id    = Number( request.parameter.id );
-      var current_data  = _read( table, request_id );
-      var data          = JSON.parse( request.parameter.data );
-      
-      var result = {};
-      
-      try {
-        var current_row   = current_data.row;
-        for( var object_key in data ) {
-          var current_col = headers.indexOf( object_key ) + 1;
-          table.getRange( current_row, current_col ).setValue( data[ object_key ]); // update iteratively
-          current_data[ object_key ] = data[ object_key ]; // update for response;
-        }
-        result.successs = true;
-        result.data = current_data;
-      } catch ( error ) {
-        result.success = false;
-        result.data = { error: error.messsage };
-      }
-        
-      return response().json( result );
-    }
-      
-    /* Delete
-    * dynamic for all tables
-    *
-    * @parameter action=delete
-    * @parameter table=
-    * @parameter id=
-    * 
-    * @example-request | ?action=update&table=&id=
-    */
-    function Delete( request, table ) {
-      var request_id    = Number( request.parameter.id );
-      var current_data  = _read( table, request_id );
-      
-      // delete
-      table.deleteRow( current_data.row );
-      
-      return response().json({
-        success: true,
-        data: current_data
-      });
-    }
-      
-    /**
-     * Build the response content type 
-     * back to the user
-     */
-    function response() {
-      return {
-        json: function(data) {
-            return ContentService.createTextOutput(
-            JSON.stringify(data)).setMimeType(ContentService.MimeType.JSON);
-        },
-        jsonp: function(req, data) {
-          return ContentService.createTextOutput(
-            req.parameters.callback + '(' + JSON.stringify(data) + ')').setMimeType(ContentService.MimeType.JAVASCRIPT);
-        }
-      }
-    }
-      
-    /**
-    * Read from sheet and return map key-value
-    * javascript object
-    */
-    function _read( sheet, id ) {
-      var data         = sheet.getDataRange().getValues();
-      var header       = data.shift();
-      
-      // Find All
-      var result = data.map(function( row, indx ) {
-      var reduced = header.reduce( function(accumulator, currentValue, currentIndex) {
-        accumulator[ currentValue ] = row[ currentIndex ];
-        return accumulator;
-      }, {});
-      
-      reduced.row = indx + 2;
-      return reduced;
-      
-      });
-        
-      // Filter if id is provided
-      if( id ) {
-        var filtered = result.filter( function( record ) {
-          if ( record.id === id ) {
-            return true;
-          } else {
-            return false;
-          }
-        });
-        return filtered.shift();
-      }
-      
-      return result;  
-    }
-      
-    /*
-    * Prepare row with correct order to insert into
-    * sheet.
-    * 
-    * @throws Error
-    */
-    function prepareRow( object_to_sort, array_with_order ) {
-      var sorted_array   = [];
-        
-      for( var i=0; i<array_with_order.length; i++ ) {
-        var value = object_to_sort[ array_with_order[ i ]];
-
-        if( typeof value === 'undefined' ) {
-          throw new Error( "The attribute/column <" + array_with_order[i] + "> is missing." );
-        } else {
-          sorted_array[i] = value;      
-        }
-      }
-      
-      return sorted_array;
-    }
-
     // 쿠키에서 값을 가져오는 함수
     function getCookieValue(name) {
       const value = "; " + document.cookie;
@@ -530,7 +314,7 @@
         return existingHash;
       }
     }
-
+    
     // Sam pading value to start with 0. eg: 01, 02, .. 09, 10, ..
     function padValue(value) {
       return (value < 10) ? "0" + value : value;
@@ -562,71 +346,39 @@
     }
 
     /* data를 만들 땐 모든 field가 들어 있어야 함 */
-    var data = JSON.stringify(
-      {"id": getUVfromCookie(),
-        "landingUrl":window.location.href, 
-        "ip":ip, 
-        "referer":document.referrer,
-        "time_stamp":getTimeStamp(), 
-        "utm":utm,
-        "device":mobile}
-    );
+    var data = JSON.stringify({
+      "id": getUVfromCookie(),
+      "landingUrl":window.location.href, 
+      "ip":ip, 
+      "referer":document.referrer,
+      "time_stamp":getTimeStamp(), 
+      "utm":utm,
+      "device":mobile
+    });
 
     $(document).ready(function () {
-      addrScript = 'https://script.google.com/macros/s/AKfycbxcFTg0Vfc4_12Bd5rB620PwNXs5Rj2ipSwTWRt4sCZd6tBvvpACVfo5XOll95aQWtMyQ/exec';
+      addrScript = 'https://script.google.com/macros/s/AKfycbx8BozObyabhzF-SflAAibgZueudTVs5Q2fH-DPvwSo1StOsy4hDvudn0m_SUtFPLH9/exec';
 
-      // $.ajax({
-      //   url: addrScript+'?action=insert&table=visitors&data='+data,
-      //   dataType: 'jsonp',
-      //   success: function (data) {
-      //     console.log('성공 - ', JSON.stringify(data));
-      //   },
-      //   error: function (xhr) {
-      //     console.log('실패 - ', JSON.stringify(xhr));
-      //   }
-      // });
-
-      // axios request
-      axios.get(addrScript+'?action=insert&table=tab_master&data='+data)
+      /* axios request */
+      axios.get(addrScript+'?action=insert&table=visitors&data='+data)
       .then(response => {
         console.log(JSON.stringify(response));
       })
-    });
-
-    axios.get(addrScript+'?action=insert&table=visitors&data='+data)
-    .then(response => {
-      console.log(JSON.stringify(response));
-    })
-    .catch(error => {
-      if (error.response) {
-        // 서버가 2xx 범위를 벗어난 상태 코드로 응답한 경우
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
-      } else if (error.request) {
-        // 요청이 전송되었지만 응답을 받지 못한 경우
-        console.log(error.request);
-      } else {
-        // 요청 설정 중에 오류가 발생한 경우
-        console.log('Error', error.message);
-      }
-      console.log(error.config);
-    });
-
-    $("#submit").on("click", function () {
-      const advice = $("#submit-advice").val();
-
-      var finalData = JSON.stringify({
-        "id": getUVfromCookie(),
-        "advice": advice
+      .catch(error => {
+        if (error.response) {
+          // 서버가 2xx 범위를 벗어난 상태 코드로 응답한 경우
+          console.log(error.response.data);
+          console.log(error.response.status);
+          console.log(error.response.headers);
+        } else if (error.request) {
+          // 요청이 전송되었지만 응답을 받지 못한 경우
+          console.log(error.request);
+        } else {
+          // 요청 설정 중에 오류가 발생한 경우
+          console.log('Error', error.message);
+        }
+        console.log(error.config);
       });
-
-      axios.get('https://**script url**/exec?action=insert&table=tab_final&data=' + finalData)
-      .then(response => {
-        console.log(response.data.data);
-        alert(JSON.stringify(response));
-        $('#submit-advice').val('');
-      })
     });
   </script>
 </body>

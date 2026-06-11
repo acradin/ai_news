@@ -200,4 +200,33 @@
       closeFeedbackModal();
     }
   });
+
+  // Coming soon links (Kakao, Instagram, etc.)
+  let toastEl = null;
+  let toastTimer = null;
+
+  function showComingSoonToast() {
+    if (!toastEl) {
+      toastEl = document.createElement("div");
+      toastEl.className = "site-toast";
+      toastEl.setAttribute("role", "status");
+      toastEl.setAttribute("aria-live", "polite");
+      document.body.appendChild(toastEl);
+    }
+
+    toastEl.textContent = "준비 중입니다.";
+    toastEl.classList.add("is-visible");
+
+    if (toastTimer) window.clearTimeout(toastTimer);
+    toastTimer = window.setTimeout(() => {
+      toastEl.classList.remove("is-visible");
+    }, 2600);
+  }
+
+  document.querySelectorAll("[data-coming-soon]").forEach((el) => {
+    el.addEventListener("click", (e) => {
+      e.preventDefault();
+      showComingSoonToast();
+    });
+  });
 })();

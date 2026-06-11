@@ -1098,6 +1098,30 @@ body.modal-open {
   overflow: hidden;
 }
 
+.site-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 32px;
+  z-index: 300;
+  padding: 12px 20px;
+  font-size: var(--font-body-size);
+  font-weight: 500;
+  color: var(--color-text);
+  background: var(--color-bg-alt);
+  border: 1px solid var(--color-border);
+  border-radius: 980px;
+  box-shadow: var(--shadow-lg);
+  transform: translateX(-50%) translateY(12px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.site-toast.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
 .feedback-modal {
   position: fixed;
   inset: 0;
