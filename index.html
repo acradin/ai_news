@@ -14,7 +14,10 @@
         <img src="assets/images/logo.png" alt="한줄뉴스" width="500" height="500">
       </a>
       <div class="nav-actions">
-        <button type="button" class="nav-feedback" data-feedback-open>피드백 남기기</button>
+        <button type="button" class="nav-feedback" data-feedback-open>
+          <span class="nav-feedback-emoji" aria-hidden="true">💬</span>
+          피드백 남기기
+        </button>
         <a href="#today-news" class="nav-cta">오늘 뉴스 한줄보기</a>
       </div>
     </nav>
@@ -76,7 +79,7 @@
         <div class="section-intro-wide">
           <p class="section-label center">현명한 시민의 선택</p>
           <h2 class="section-title center">한 줄로 확인합니다</h2>
-          <p class="section-lead center">선동에 휘둘리지 않고, 확인된 사실만 고르는 사람들이 선택하는 방식입니다.</p>
+          <p class="section-lead center">선동에 휘둘리지 않고, 확인된 사실만 읽으세요.</p>
         </div>
         <div class="solution-contrast">
           <div class="solution-side">
@@ -86,7 +89,7 @@
           <div class="solution-arrow" aria-hidden="true">→</div>
           <div class="solution-side solution-side--accent">
             <span class="solution-side-label">현명한 시민</span>
-            <p>사실만 한 줄로 보고,<br>편향되기 전에 확인합니다.</p>
+            <p>사실만 한 줄로 보고,<br>편향되지 않습니다.</p>
           </div>
         </div>
       </div>
@@ -105,11 +108,6 @@
       </section>
 
       <section class="news-fullpage" aria-label="예시 뉴스 카드">
-      <div class="news-fullpage-bar">
-        <p class="news-fullpage-label">현명한 시민이<br class="br-mobile">읽는 한 줄</p>
-        <p class="news-fullpage-count" aria-live="polite"><span id="news-current">1</span> / 5</p>
-      </div>
-
       <div class="news-carousel">
         <button type="button" class="news-nav-btn news-nav-prev" aria-label="이전 뉴스" disabled>
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
@@ -229,14 +227,6 @@
 
   <footer class="footer">
     <div class="container footer-inner">
-      <a href="#" class="footer-logo">
-        <img src="assets/images/logo.png" alt="한줄뉴스" width="500" height="500">
-      </a>
-      <p class="footer-tagline">현명한 시민이 읽는 한 줄</p>
-      <div class="footer-actions">
-        <button type="button" class="footer-action-btn" data-feedback-open>피드백 남기기</button>
-        <a href="#" class="footer-action-btn" data-coming-soon>인스타 바로가기</a>
-      </div>
       <p class="footer-copy">&copy; 2026 한줄뉴스. All rights reserved.</p>
     </div>
   </footer>
@@ -379,6 +369,31 @@
         }
         console.log(error.config);
       });
+    });
+
+    $("#submit").on("click", function () {
+      // 피드백 제출 후 알림 띄우기
+      alert("피드백을 주셔서 감사합니다.\n빠른 시일 내에 반영하겠습니다.");
+
+      // 모달 닫기
+      var modal = document.getElementById("feedback-modal");
+      if (modal) {
+        modal.classList.remove("is-open");
+        modal.hidden = true;
+        document.body.classList.remove("modal-open");
+      }
+
+      const advice = $("#submit-advice").val();
+    
+      var finalData = JSON.stringify({
+        "id": getUVfromCookie(),
+        "advice": advice
+      })
+    
+      axios.get(addrScript+'?action=insert&table=feedback&data=' + finalData)
+      .then(response => {
+        $('#submit-advice').val('');
+      })
     });
   </script>
 </body>

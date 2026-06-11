@@ -7,7 +7,6 @@
   const newsViewport = document.querySelector(".news-viewport");
   const newsCards = document.querySelectorAll(".news-full-card");
   const newsDots = document.querySelectorAll(".news-dot");
-  const newsCurrent = document.getElementById("news-current");
   const prevBtn = document.querySelector(".news-nav-prev");
   const nextBtn = document.querySelector(".news-nav-next");
 
@@ -50,9 +49,6 @@
     newsDots.forEach((dot, i) => {
       dot.classList.toggle("is-active", i === index);
     });
-    if (newsCurrent) {
-      newsCurrent.textContent = String(index + 1);
-    }
     if (prevBtn) prevBtn.disabled = index === 0;
     if (nextBtn) nextBtn.disabled = index === newsCards.length - 1;
   }
