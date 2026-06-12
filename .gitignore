@@ -1,0 +1,11 @@
+# Backend
+backend/.env
+backend/.venv/
+backend/**/__pycache__/
+backend/data/news_cache.json
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
