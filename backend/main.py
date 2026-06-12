@@ -10,8 +10,9 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from openai import OpenAI
 
-from config import CACHE, CATEGORY_ORDER, CORS, MAX_ITEMS, NEWS_TOPIC, OPENAI_API_KEY, RSS_FEEDS
+from config import CACHE, CATEGORY_ORDER, CORS, MAX_ITEMS, NEWS_SOURCE, NEWS_TOPIC, OPENAI_API_KEY, RSS_FEEDS
 from fetcher import collect_rss_entries, fetch_articles
+from headlines import fetch_headline_entries, is_headline_source
 from summarizer import summarize_article
 
 app = FastAPI()
@@ -19,7 +20,7 @@ app.add_middleware(CORSMiddleware, allow_origins=CORS, allow_methods=["*"], allo
 
 
 def _pick_one_per_category(items: list[dict]) -> list[dict]:
-    """분야별 첫 기사 1건만 골라 고정 순서(경제→글로벌)로 반환한다."""
+    """LLM이 분류한 category 기준으로 분야별 1건만 골라 고정 순서로 반환한다."""
     by_category: dict[str, dict] = {}
     for item in items:
         category = item.get("category")
@@ -29,20 +30,21 @@ def _pick_one_per_category(items: list[dict]) -> list[dict]:
 
 
 def _refresh() -> dict:
-    """RSS 수집 → LLM 요약 파이프라인을 실행하고, 결과를 캐시 파일에 저장한다."""
+    """수집 → LLM 요약 파이프라인. category는 LLM 분류 결과만 사용한다."""
     if not OPENAI_API_KEY:
         raise HTTPException(503, "OPENAI_API_KEY is not set")
     articles = fetch_articles()
     if not articles:
         raise HTTPException(503, "No articles fetched")
     client = OpenAI(api_key=OPENAI_API_KEY)
-    items: list[dict] = []
     items_by_category: dict[str, dict] = {}
+    items_list: list[dict] = []
     last_error = None
     target_count = MAX_ITEMS if NEWS_TOPIC == "politics" else len(CATEGORY_ORDER)
+
     for article in articles:
         if NEWS_TOPIC == "politics":
-            if len(items) >= target_count:
+            if len(items_list) >= target_count:
                 break
         elif len(items_by_category) >= target_count:
             break
@@ -50,19 +52,18 @@ def _refresh() -> dict:
             item = summarize_article(client, article)
             if not item:
                 continue
+            category = item["category"]
             if NEWS_TOPIC == "politics":
-                items.append(item)
-            elif item["category"] not in items_by_category:
-                items_by_category[item["category"]] = item
+                items_list.append(item)
+            elif category not in items_by_category:
+                items_by_category[category] = item
         except Exception as exc:
             last_error = exc
             logger.warning("summarize failed for %s: %s", article.get("url"), exc)
-            continue
-    if NEWS_TOPIC != "politics":
-        items = [items_by_category[c] for c in CATEGORY_ORDER if c in items_by_category]
+
+    items = items_list if NEWS_TOPIC == "politics" else [items_by_category[c] for c in CATEGORY_ORDER if c in items_by_category]
     if not items:
-        detail = f"Summarization failed: {last_error}" if last_error else "Summarization failed"
-        raise HTTPException(503, detail)
+        logger.warning("No articles summarized: %s", last_error)
     updated_at = datetime.now(timezone.utc).isoformat()
     CACHE.write_text(json.dumps({"updated_at": updated_at, "items": items}, ensure_ascii=False, indent=2), encoding="utf-8")
     return {"ok": True, "count": len(items), "updated_at": updated_at}
@@ -76,9 +77,22 @@ def health():
 
 @app.get("/api/v1/feeds")
 def get_feeds():
-    """등록된 RSS 목록과 피드별 수집 결과를 반환한다 (본문 추출·LLM 없음, 동작 확인용)."""
+    """등록된 수집 소스와 목록을 반환한다 (본문 추출·LLM 없음, 동작 확인용)."""
+    if is_headline_source():
+        entries = fetch_headline_entries(limit=20)
+        by_source: dict[str, int] = {}
+        for entry in entries:
+            by_source[entry["source"]] = by_source.get(entry["source"], 0) + 1
+        return {
+            "source": NEWS_SOURCE,
+            "configured_feeds": len(RSS_FEEDS),
+            "total_entries": len(entries),
+            "feeds": [{"name": name, "entry_count": count} for name, count in by_source.items()],
+            "samples": [{"title": e["title"], "source": e["source"], "url": e["url"]} for e in entries[:10]],
+        }
     result = collect_rss_entries()
     return {
+        "source": NEWS_SOURCE,
         "configured_feeds": len(RSS_FEEDS),
         "total_entries": result["total_entries"],
         "feeds": result["feeds"],

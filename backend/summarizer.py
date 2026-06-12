@@ -5,7 +5,8 @@ from datetime import datetime
 
 from openai import OpenAI
 
-from config import CATEGORIES, CATEGORY_ORDER, OPENAI_MODEL, PROMPT
+from config import CATEGORIES, MIN_IMPORTANCE_SCORE, OPENAI_MODEL, PROMPT
+from headlines import is_headline_source
 
 
 def summarize_article(client: OpenAI, article: dict) -> dict | None:
@@ -20,11 +21,20 @@ def summarize_article(client: OpenAI, article: dict) -> dict | None:
     )
     data = json.loads(res.choices[0].message.content or "{}")
     summary = (data.get("summary") or "").strip()
-    default_category = CATEGORY_ORDER[0] if CATEGORY_ORDER else "사회"
-    category = (data.get("category") or default_category).strip()
-    if category not in CATEGORIES:
-        category = default_category
     if not summary:
+        return None
+
+    try:
+        score = int(data.get("score") or 0)
+    except (TypeError, ValueError):
+        score = 0
+
+    if not is_headline_source():
+        if not bool(data.get("important")) or score < MIN_IMPORTANCE_SCORE:
+            return None
+
+    category = (data.get("category") or "").strip()
+    if category not in CATEGORIES:
         return None
 
     now = datetime.now()
@@ -36,4 +46,5 @@ def summarize_article(client: OpenAI, article: dict) -> dict | None:
         "summary": summary,
         "source_name": article["source"],
         "source_url": article["url"],
+        "importance_score": score,
     }

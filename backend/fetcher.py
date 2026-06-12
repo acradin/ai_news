@@ -3,7 +3,18 @@
 import trafilatura
 import feedparser
 
-from config import FETCH_BODY_LIMIT, RSS_FEEDS
+from config import FETCH_BODY_LIMIT, NEWS_SOURCE, RSS_FEEDS
+from headlines import fetch_headline_entries, is_headline_source
+
+PROMO_TITLE_KEYWORDS = (
+    "세미나", "공모전", "개강", "축제", "시상", "체험", "참관", "유해발굴",
+    "참배", "홍보", "기념식", "출범식", "개최", "수상작", "소통광장",
+)
+
+
+def is_likely_promo(title: str) -> bool:
+    """제목만 보고 홍보·행사성 기사인지 빠르게 걸러낸다."""
+    return any(keyword in title for keyword in PROMO_TITLE_KEYWORDS)
 
 
 def extract_body(url: str, fallback: str = "") -> str:
@@ -31,7 +42,7 @@ def collect_rss_entries() -> dict:
         for entry in parsed.entries:
             article_url = (entry.get("link") or "").strip()
             title = (entry.get("title") or "").strip()
-            if not article_url or not title or article_url in seen_urls:
+            if not article_url or not title or article_url in seen_urls or is_likely_promo(title):
                 continue
 
             seen_urls.add(article_url)
@@ -61,12 +72,17 @@ def collect_rss_entries() -> dict:
     }
 
 
+def _entries_for_fetch() -> list[dict]:
+    if is_headline_source():
+        return fetch_headline_entries(limit=FETCH_BODY_LIMIT)
+    return collect_rss_entries()["entries"]
+
+
 def fetch_articles() -> list[dict]:
-    """모든 RSS에서 모은 기사에 본문을 붙여 LLM 처리용 리스트로 반환한다."""
-    collected = collect_rss_entries()
+    """수집 소스(RSS 또는 연합 주요뉴스)에서 본문을 붙여 LLM 처리용 리스트로 반환한다."""
     articles: list[dict] = []
 
-    for entry in collected["entries"]:
+    for entry in _entries_for_fetch():
         if len(articles) >= FETCH_BODY_LIMIT:
             break
 
@@ -74,12 +90,15 @@ def fetch_articles() -> list[dict]:
         if len(body) < 80:
             continue
 
-        articles.append({
+        article = {
             "title": entry["title"],
             "url": entry["url"],
             "source": entry["source"],
             "feed_url": entry["feed_url"],
             "body": body,
-        })
+        }
+        if entry.get("hint_category"):
+            article["hint_category"] = entry["hint_category"]
+        articles.append(article)
 
     return articles

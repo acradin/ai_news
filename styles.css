@@ -823,6 +823,10 @@ img {
   will-change: transform;
 }
 
+.news-full-card.is-hidden {
+  display: none;
+}
+
 .news-full-card {
   position: relative;
   flex: 0 0 100%;

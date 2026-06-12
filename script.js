@@ -2,11 +2,12 @@
   "use strict";
 
   const header = document.querySelector(".header");
+  const examplesBlock = document.querySelector(".examples-block");
   const newsSection = document.querySelector(".news-fullpage");
   const newsTrack = document.querySelector(".news-track");
   const newsViewport = document.querySelector(".news-viewport");
-  const newsCards = document.querySelectorAll(".news-full-card");
-  const newsDots = document.querySelectorAll(".news-dot");
+  const allNewsCards = document.querySelectorAll(".news-full-card");
+  const newsDotsContainer = document.querySelector(".news-dots");
   const prevBtn = document.querySelector(".news-nav-prev");
   const nextBtn = document.querySelector(".news-nav-next");
 
@@ -17,6 +18,7 @@
       ? "http://127.0.0.1:8000"
       : "");
 
+  let activeCards = [];
   let currentIndex = 0;
 
   function populateNewsCard(card, item) {
@@ -40,6 +42,48 @@
     }
   }
 
+  function rebuildDots(count) {
+    if (!newsDotsContainer) return;
+    newsDotsContainer.innerHTML = "";
+    for (let i = 0; i < count; i++) {
+      const dot = document.createElement("button");
+      dot.type = "button";
+      dot.className = "news-dot" + (i === 0 ? " is-active" : "");
+      dot.dataset.target = String(i);
+      dot.setAttribute("aria-label", `${i + 1}번째 뉴스`);
+      dot.addEventListener("click", () => goTo(i));
+      newsDotsContainer.appendChild(dot);
+    }
+  }
+
+  function setActiveCard(index) {
+    activeCards.forEach((card, i) => {
+      card.classList.toggle("is-active", i === index);
+    });
+    document.querySelectorAll(".news-dot").forEach((dot, i) => {
+      dot.classList.toggle("is-active", i === index);
+    });
+    if (prevBtn) prevBtn.disabled = index === 0;
+    if (nextBtn) nextBtn.disabled = index === activeCards.length - 1;
+  }
+
+  function goTo(index) {
+    if (!newsTrack || !activeCards.length) return;
+    const nextIndex = Math.max(0, Math.min(index, activeCards.length - 1));
+    if (nextIndex === currentIndex) return;
+
+    currentIndex = nextIndex;
+    newsTrack.style.transform = `translateX(-${currentIndex * 100}%)`;
+    setActiveCard(currentIndex);
+  }
+
+  function resetCarousel() {
+    currentIndex = 0;
+    if (!newsTrack || !activeCards.length) return;
+    newsTrack.style.transform = "translateX(0)";
+    setActiveCard(0);
+  }
+
   async function loadTodayNews() {
     if (!API_BASE) return;
 
@@ -47,20 +91,46 @@
       const res = await fetch(`${API_BASE}/api/v1/news`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      const byCategory = Object.fromEntries(
-        (data.items || []).map((item) => [item.category, item])
-      );
+      const items = data.items || [];
 
-      newsCards.forEach((card) => {
-        const item = byCategory[card.dataset.category];
-        if (item) populateNewsCard(card, item);
+      allNewsCards.forEach((card) => {
+        card.classList.add("is-hidden");
+        card.classList.remove("is-active");
       });
+
+      if (!items.length) {
+        if (examplesBlock) examplesBlock.hidden = true;
+        activeCards = [];
+        return;
+      }
+
+      const cards = Array.from(allNewsCards);
+      activeCards = [];
+      items.forEach((item, index) => {
+        const card = cards[index];
+        if (!card) return;
+        card.dataset.category = item.category;
+        populateNewsCard(card, item);
+        card.classList.remove("is-hidden");
+        if (newsTrack) newsTrack.appendChild(card);
+        activeCards.push(card);
+      });
+
+      if (!activeCards.length) {
+        if (examplesBlock) examplesBlock.hidden = true;
+        return;
+      }
+
+      if (examplesBlock) examplesBlock.hidden = false;
+      activeCards[0].classList.add("is-active");
+      rebuildDots(activeCards.length);
+      resetCarousel();
     } catch (err) {
       console.warn("오늘 뉴스를 불러오지 못했습니다.", err);
+      if (examplesBlock) examplesBlock.hidden = true;
+      activeCards = [];
     }
   }
-
-  loadTodayNews();
 
   function updateHeader() {
     if (!header) return;
@@ -91,31 +161,7 @@
 
   revealTargets.forEach((el) => revealObserver.observe(el));
 
-  // News carousel
-  function setActiveCard(index) {
-    newsCards.forEach((card, i) => {
-      card.classList.toggle("is-active", i === index);
-    });
-    newsDots.forEach((dot, i) => {
-      dot.classList.toggle("is-active", i === index);
-    });
-    if (prevBtn) prevBtn.disabled = index === 0;
-    if (nextBtn) nextBtn.disabled = index === newsCards.length - 1;
-  }
-
-  function goTo(index) {
-    if (!newsTrack || !newsCards.length) return;
-    const nextIndex = Math.max(0, Math.min(index, newsCards.length - 1));
-    if (nextIndex === currentIndex) return;
-
-    currentIndex = nextIndex;
-    newsTrack.style.transform = `translateX(-${currentIndex * 100}%)`;
-    setActiveCard(currentIndex);
-  }
-
-  if (newsSection && newsCards.length && newsTrack) {
-    setActiveCard(0);
-
+  if (newsSection && newsTrack) {
     if (prevBtn) {
       prevBtn.addEventListener("click", () => goTo(currentIndex - 1));
     }
@@ -123,14 +169,8 @@
       nextBtn.addEventListener("click", () => goTo(currentIndex + 1));
     }
 
-    newsDots.forEach((dot) => {
-      dot.addEventListener("click", () => {
-        goTo(Number(dot.dataset.target));
-      });
-    });
-
     document.addEventListener("keydown", (e) => {
-      if (!newsSection.classList.contains("is-visible")) return;
+      if (!newsSection.classList.contains("is-visible") || !activeCards.length) return;
       if (e.key === "ArrowRight") {
         e.preventDefault();
         goTo(currentIndex + 1);
@@ -141,7 +181,6 @@
       }
     });
 
-    // Touch swipe
     if (newsViewport) {
       let touchStartX = 0;
       let touchStartY = 0;
@@ -158,6 +197,7 @@
       newsViewport.addEventListener(
         "touchend",
         (e) => {
+          if (!activeCards.length) return;
           const diffX = touchStartX - e.changedTouches[0].clientX;
           const diffY = touchStartY - e.changedTouches[0].clientY;
 
@@ -180,6 +220,8 @@
     sectionObserver.observe(newsSection);
   }
 
+  loadTodayNews();
+
   // Smooth anchor offset for fixed header
   document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     anchor.addEventListener("click", (e) => {
@@ -199,7 +241,7 @@
 
       window.scrollTo({ top, behavior: "smooth" });
 
-      if (id === "#examples") {
+      if (id === "#examples" || id === "#today-news") {
         goTo(0);
       }
     });
