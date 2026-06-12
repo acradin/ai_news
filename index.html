@@ -5,8 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="최신 뉴스를 한 줄로. 현명한 시민을 위한 OneLine News.">
   <meta name="api-base" content="">
+  <!-- GA4 측정 ID (예: G-XXXXXXXXXX). 비우면 로컬·미설정 환경에서 추적 안 함 -->
+  <meta name="ga-measurement-id" content="G-W4PCCCG066">
   <title>한줄뉴스 — 최신 뉴스를 한 줄로</title>
   <link rel="stylesheet" href="styles.css">
+  <script>
+    (function () {
+      var meta = document.querySelector('meta[name="ga-measurement-id"]');
+      var id = meta && meta.content.trim();
+      if (!id || !/^G-[A-Z0-9]+$/i.test(id)) return;
+
+      var s = document.createElement("script");
+      s.async = true;
+      s.src = "https://www.googletagmanager.com/gtag/js?id=" + encodeURIComponent(id);
+      document.head.appendChild(s);
+
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { window.dataLayer.push(arguments); }
+      window.gtag = gtag;
+      gtag("js", new Date());
+      gtag("config", id, { anonymize_ip: true });
+    })();
+  </script>
 </head>
 <body>
   <header class="header">
