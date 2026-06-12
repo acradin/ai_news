@@ -1,0 +1,9 @@
+# 정적 사이트 루트 배포 + GCP API 프록시 (HTTPS → HTTP mixed content 방지)
+[build]
+  publish = "."
+
+[[redirects]]
+  from = "/api/*"
+  to = "http://136.112.27.170/api/:splat"
+  status = 200
+  force = true

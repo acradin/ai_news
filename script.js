@@ -67,35 +67,40 @@
     if (nextBtn) nextBtn.disabled = index === activeCards.length - 1;
   }
 
+  function updateTrackPosition() {
+    if (!newsTrack || !newsViewport) return;
+    newsTrack.style.transform = `translateX(-${currentIndex * newsViewport.offsetWidth}px)`;
+  }
+
   function goTo(index) {
     if (!newsTrack || !activeCards.length) return;
     const nextIndex = Math.max(0, Math.min(index, activeCards.length - 1));
     if (nextIndex === currentIndex) return;
 
     currentIndex = nextIndex;
-    newsTrack.style.transform = `translateX(-${currentIndex * 100}%)`;
+    updateTrackPosition();
     setActiveCard(currentIndex);
   }
 
   function resetCarousel() {
     currentIndex = 0;
     if (!newsTrack || !activeCards.length) return;
-    newsTrack.style.transform = "translateX(0)";
+    updateTrackPosition();
     setActiveCard(0);
   }
 
   async function loadTodayNews() {
-    if (!API_BASE) return;
-
     try {
       const res = await fetch(`${API_BASE}/api/v1/news`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       const items = data.items || [];
 
-      allNewsCards.forEach((card) => {
+      const cards = Array.from(allNewsCards);
+      cards.forEach((card) => {
         card.classList.add("is-hidden");
         card.classList.remove("is-active");
+        card.remove();
       });
 
       if (!items.length) {
@@ -104,7 +109,6 @@
         return;
       }
 
-      const cards = Array.from(allNewsCards);
       activeCards = [];
       items.forEach((item, index) => {
         const card = cards[index];
@@ -218,6 +222,10 @@
     );
 
     sectionObserver.observe(newsSection);
+
+    window.addEventListener("resize", () => {
+      if (activeCards.length) updateTrackPosition();
+    });
   }
 
   loadTodayNews();
