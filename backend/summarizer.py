@@ -5,14 +5,13 @@ from datetime import datetime
 
 from openai import OpenAI
 
-from config import CATEGORIES, OPENAI_MODEL, PROMPT
+from config import CATEGORIES, CATEGORY_ORDER, OPENAI_MODEL, PROMPT
 
 
 def summarize_article(client: OpenAI, article: dict) -> dict | None:
     """OpenAI로 기사를 fact-only 한 줄 요약하고, 프론트용 뉴스 카드 dict를 만든다."""
     res = client.chat.completions.create(
         model=OPENAI_MODEL,
-        temperature=0.2,
         response_format={"type": "json_object"},
         messages=[
             {"role": "system", "content": PROMPT},
@@ -21,9 +20,10 @@ def summarize_article(client: OpenAI, article: dict) -> dict | None:
     )
     data = json.loads(res.choices[0].message.content or "{}")
     summary = (data.get("summary") or "").strip()
-    category = (data.get("category") or "사회").strip()
+    default_category = CATEGORY_ORDER[0] if CATEGORY_ORDER else "사회"
+    category = (data.get("category") or default_category).strip()
     if category not in CATEGORIES:
-        category = "사회"
+        category = default_category
     if not summary:
         return None
 

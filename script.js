@@ -10,7 +10,57 @@
   const prevBtn = document.querySelector(".news-nav-prev");
   const nextBtn = document.querySelector(".news-nav-next");
 
+  const apiBaseMeta = document.querySelector('meta[name="api-base"]');
+  const API_BASE =
+    (apiBaseMeta && apiBaseMeta.content.trim()) ||
+    (location.hostname === "localhost" || location.hostname === "127.0.0.1"
+      ? "http://127.0.0.1:8000"
+      : "");
+
   let currentIndex = 0;
+
+  function populateNewsCard(card, item) {
+    const tag = card.querySelector(".tag");
+    const timeEl = card.querySelector(".card-meta time");
+    const body = card.querySelector(".card-body");
+    const sourceLink = card.querySelector(".card-source");
+
+    if (tag) tag.textContent = item.category;
+    if (timeEl) {
+      timeEl.textContent = item.date_label;
+      timeEl.dateTime = item.published_at;
+    }
+    if (body) body.textContent = item.summary;
+    if (sourceLink) {
+      sourceLink.textContent = item.source_name;
+      sourceLink.href = item.source_url;
+      sourceLink.target = "_blank";
+      sourceLink.rel = "noopener noreferrer";
+      sourceLink.setAttribute("aria-label", `${item.source_name} 원문 보기`);
+    }
+  }
+
+  async function loadTodayNews() {
+    if (!API_BASE) return;
+
+    try {
+      const res = await fetch(`${API_BASE}/api/v1/news`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      const byCategory = Object.fromEntries(
+        (data.items || []).map((item) => [item.category, item])
+      );
+
+      newsCards.forEach((card) => {
+        const item = byCategory[card.dataset.category];
+        if (item) populateNewsCard(card, item);
+      });
+    } catch (err) {
+      console.warn("오늘 뉴스를 불러오지 못했습니다.", err);
+    }
+  }
+
+  loadTodayNews();
 
   function updateHeader() {
     if (!header) return;

@@ -1,5 +1,13 @@
 """비상업 베타용 한국 언론사 RSS 목록 (뉴스·칼럼 피드 제외)."""
 
+POLITICS_RSS_FEEDS = [
+    {"name": "연합뉴스 정치", "url": "https://www.yna.co.kr/rss/politics.xml"},
+    {"name": "조선일보 정치", "url": "https://www.chosun.com/arc/outboundfeeds/rss/category/politics/?outputType=xml"},
+    {"name": "한겨레 정치", "url": "http://www.hani.co.kr/rss/politics/"},
+    {"name": "SBS 정치", "url": "https://news.sbs.co.kr/news/SectionRssFeed.do?sectionId=01&plink=RSSREADER"},
+    {"name": "JTBC 속보", "url": "https://fs.jtbc.co.kr/RSS/newsflash.xml"},
+]
+
 DEFAULT_RSS_FEEDS = [
     {"name": "연합뉴스", "url": "https://www.yna.co.kr/rss/news.xml"},
     {"name": "연합뉴스 경제", "url": "https://www.yna.co.kr/rss/economy.xml"},

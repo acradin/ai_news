@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="최신 뉴스를 한 줄로. 현명한 시민을 위한 OneLine News.">
+  <meta name="api-base" content="http://127.0.0.1:8000">
   <title>한줄뉴스 — 최신 뉴스를 한 줄로</title>
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -117,72 +118,72 @@
 
         <div class="news-viewport" id="today-news">
           <div class="news-track">
-            <article class="news-full-card is-active" data-index="0" style="--card-bg: url('https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1600&q=80&auto=format&fit=crop')">
+            <article class="news-full-card is-active" data-index="0" data-category="정치">
               <div class="news-full-card-inner">
                 <div class="card-meta">
-                  <span class="tag">AI</span>
+                  <span class="tag">정치</span>
                   <time datetime="2026-06-11">6월 11일</time>
                 </div>
-                <p class="card-body">OpenAI, 6월 11일 기업용 AI 기능 업데이트 발표</p>
+                <p class="card-body">뉴스를 불러오는 중입니다.</p>
                 <div class="card-source-wrap">
                   <span class="card-source-label">출처</span>
-                  <a href="#" class="card-source" aria-label="OpenAI 원문 보기">OpenAI</a>
+                  <a href="#" class="card-source" aria-label="원문 보기">—</a>
                 </div>
               </div>
             </article>
 
-            <article class="news-full-card" data-index="1" style="--card-bg: url('https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1600&q=80&auto=format&fit=crop')">
+            <article class="news-full-card" data-index="1" data-category="경제">
               <div class="news-full-card-inner">
                 <div class="card-meta">
                   <span class="tag">경제</span>
                   <time datetime="2026-06-11">6월 11일</time>
                 </div>
-                <p class="card-body">코스피, 6월 11일 전 거래일 대비 상승 마감</p>
+                <p class="card-body">뉴스를 불러오는 중입니다.</p>
                 <div class="card-source-wrap">
                   <span class="card-source-label">출처</span>
-                  <a href="#" class="card-source" aria-label="한국거래소 원문 보기">한국거래소</a>
+                  <a href="#" class="card-source" aria-label="원문 보기">—</a>
                 </div>
               </div>
             </article>
 
-            <article class="news-full-card" data-index="2" style="--card-bg: url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1600&q=80&auto=format&fit=crop')">
+            <article class="news-full-card" data-index="2" data-category="정책">
               <div class="news-full-card-inner">
                 <div class="card-meta">
                   <span class="tag">정책</span>
                   <time datetime="2026-06-11">6월 11일</time>
                 </div>
-                <p class="card-body">정부, 청년 주거 지원 확대안 발표</p>
+                <p class="card-body">뉴스를 불러오는 중입니다.</p>
                 <div class="card-source-wrap">
                   <span class="card-source-label">출처</span>
-                  <a href="#" class="card-source" aria-label="국토교통부 원문 보기">국토교통부</a>
+                  <a href="#" class="card-source" aria-label="원문 보기">—</a>
                 </div>
               </div>
             </article>
 
-            <article class="news-full-card" data-index="3" style="--card-bg: url('https://images.unsplash.com/photo-1517154421133-9ed960cd0b15?w=1600&q=80&auto=format&fit=crop')">
+            <article class="news-full-card" data-index="3" data-category="사회">
               <div class="news-full-card-inner">
                 <div class="card-meta">
                   <span class="tag">사회</span>
                   <time datetime="2026-06-11">6월 11일</time>
                 </div>
-                <p class="card-body">서울시, 폭염 대응 전력 수요 관리 대책 시행</p>
+                <p class="card-body">뉴스를 불러오는 중입니다.</p>
                 <div class="card-source-wrap">
                   <span class="card-source-label">출처</span>
-                  <a href="#" class="card-source" aria-label="서울시 원문 보기">서울시</a>
+                  <a href="#" class="card-source" aria-label="원문 보기">—</a>
                 </div>
               </div>
             </article>
 
-            <article class="news-full-card" data-index="4" style="--card-bg: url('https://images.unsplash.com/photo-1516737765765-f93cb340ae00?w=1600&q=80&auto=format&fit=crop')">
+            <article class="news-full-card" data-index="4" data-category="글로벌">
               <div class="news-full-card-inner">
                 <div class="card-meta">
                   <span class="tag">글로벌</span>
                   <time datetime="2026-06-11">6월 11일</time>
                 </div>
-                <p class="card-body">국제유가, 중동 긴장 관련 보도 이후 전일 대비 상승</p>
+                <p class="card-body">뉴스를 불러오는 중입니다.</p>
                 <div class="card-source-wrap">
                   <span class="card-source-label">출처</span>
-                  <a href="#" class="card-source" aria-label="Reuters 원문 보기">Reuters</a>
+                  <a href="#" class="card-source" aria-label="원문 보기">—</a>
                 </div>
               </div>
             </article>
@@ -195,7 +196,7 @@
           </svg>
         </button>
 
-        <p class="news-carousel-hint">예시 카드 · 좌우로 넘겨 보세요</p>
+        <p class="news-carousel-hint">좌우로 넘겨 오늘의 뉴스를 확인하세요</p>
       </div>
 
       <nav class="news-dots" aria-label="뉴스 카드 위치">
